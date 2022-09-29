@@ -48,7 +48,29 @@ function run() {
             core.notice('Started Flake8 Github Action.');
             const token = core.getInput('gh-token');
             const octokit = new octokit_1.Octokit({ auth: String(token) });
-            const check = yield octokit.rest.checks.listForRef(Object.assign(Object.assign({ check_name: github.context.job }, github.context.repo), { ref: github.context.sha }));
+            const check = yield octokit.rest.checks.create({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                name: "Flake8 Check Result",
+                head_sha: github.context.sha,
+                status: "completed",
+                conclusion: "success",
+                output: {
+                    title: "Flake8 Check Detailed Report",
+                    summary: "",
+                    annotations: [
+                        {
+                            path: ".github/workflows/flake8.yml",
+                            start_line: 1,
+                            end_line: 1,
+                            annotation_level: "failure",
+                            message: "[E000] Test error",
+                            start_column: 1,
+                            end_column: 1
+                        }
+                    ]
+                }
+            });
             console.log(check);
         }
         catch (error) {

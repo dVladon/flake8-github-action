@@ -62,6 +62,8 @@ function parseCheckOutput(raw_output) {
         let errors = [];
         raw_output.split('\n').forEach((e) => {
             let match = e.match(reg);
+            console.log(e);
+            console.log(match);
             if (match) {
                 errors.push({
                     path: match[1].replace('./', ''),
@@ -74,6 +76,7 @@ function parseCheckOutput(raw_output) {
                 });
             }
         });
+        console.log(errors);
         return errors;
     });
 }
@@ -85,6 +88,7 @@ function run() {
         const octokit = github.getOctokit(token);
         let out = yield runCheck(checkPath);
         let errors = yield parseCheckOutput(out);
+        console.log(errors);
         if (errors.length == 0) {
             yield octokit.rest.checks.create({
                 owner: github.context.repo.owner,

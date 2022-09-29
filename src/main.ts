@@ -34,6 +34,8 @@ async function parseCheckOutput(raw_output: string): Promise<Flake8Error[]> {
 
     raw_output.split('\n').forEach((e) => {
         let match = e.match(reg);
+        console.log(e);
+        console.log(match);
         if (match) {
             errors.push({
                 path: match[1].replace('./', ''),
@@ -47,6 +49,8 @@ async function parseCheckOutput(raw_output: string): Promise<Flake8Error[]> {
         }
     });
 
+    console.log(errors);
+
     return errors;
 }
 
@@ -59,6 +63,8 @@ async function run() {
 
     let out = await runCheck(checkPath);
     let errors = await parseCheckOutput(out);
+
+    console.log(errors);
 
     if (errors.length == 0) {
         await octokit.rest.checks.create({

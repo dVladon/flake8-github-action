@@ -51,7 +51,7 @@ async function parseCheckOutput(raw_output: string): Promise<Flake8Report> {
     let raw_errors = raw_output.split('\n');
     let current_error_match = raw_errors[idx].match(error_reg);
 
-    while (current_error_match) {
+    while (idx < raw_errors.length && current_error_match) {
         report.errors.push({
             path: current_error_match[1].replace('./', ''),
             start_line: parseInt(current_error_match[2]),

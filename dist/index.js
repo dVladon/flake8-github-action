@@ -58,7 +58,7 @@ function runCheck(pathToCheck) {
 }
 function parseCheckOutput(raw_output) {
     return __awaiter(this, void 0, void 0, function* () {
-        const reg = new RegExp('/^(.*py):(\d+):(\d+):\s(\w\d+)\s(.*)$/');
+        const reg = new RegExp('^(.*\.py):([0-9]+):([0-9]+): ([A-Za-z][0-9]+) (.*)$');
         let errors = [];
         raw_output.split('\n').forEach((e) => {
             let match = e.match(reg);

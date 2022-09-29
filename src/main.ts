@@ -28,7 +28,7 @@ async function runCheck(pathToCheck: string) {
 }
 
 async function parseCheckOutput(raw_output: string): Promise<Flake8Error[]> {
-    const reg = new RegExp('/^(.*py):(\d+):(\d+):\s(\w\d+)\s(.*)$/');
+    const reg = new RegExp('^(.*\.py):([0-9]+):([0-9]+): ([A-Za-z][0-9]+) (.*)$');
     
     let errors: Flake8Error[] = [];
 

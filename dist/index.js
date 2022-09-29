@@ -123,7 +123,8 @@ function run() {
             report.statistics.forEach((s) => {
                 summary += `  - **${s.code}** ${s.description} - **${s.count}**\n`;
             });
-            summary += "\n\n---\nMore details on how to fix issues: http://pylint-messages.wikidot.com/all-codes";
+            summary += "\n\n---\nMore issues description: http://pylint-messages.wikidot.com/all-codes\n";
+            summary += "### Detailed list of issues";
             yield octokit.rest.checks.create({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,

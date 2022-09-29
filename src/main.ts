@@ -5,6 +5,6 @@ const github = require('@actions/github');
     try {
         core.notice('Started Flake8 Github Action.')
     } catch (error) {
-        core.setFailed(error.message);
+        core.setFailed(error);
     }
 });

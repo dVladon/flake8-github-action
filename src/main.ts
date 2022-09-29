@@ -2,6 +2,17 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as github from '@actions/github';
 
+type Flake8Report = {
+    errors: Flake8Error[],
+    statistics: Flake8ErrorStatistic[]
+}
+
+type Flake8ErrorStatistic = {
+    count: string,
+    code: string,
+    description: string,
+}
+
 type Flake8Error = {
     path: string,
     start_line: number,
@@ -27,31 +38,45 @@ async function runCheck(pathToCheck: string) {
     return out;
 }
 
-async function parseCheckOutput(raw_output: string): Promise<Flake8Error[]> {
-    const reg = new RegExp('^(.*\.py):([0-9]+):([0-9]+): ([A-Za-z][0-9]+) (.*)$');
-    
-    let errors: Flake8Error[] = [];
+async function parseCheckOutput(raw_output: string): Promise<Flake8Report> {
+    const error_reg = new RegExp('^(.*\.py):([0-9]+):([0-9]+): ([A-Za-z][0-9]+) (.*)$');
+    const statistic_reg = new RegExp('^([0-9]+).*([A-Za-z][0-9]+) (.*)$');
 
-    raw_output.split('\n').forEach((e) => {
-        let match = e.match(reg);
-        console.log(e);
-        console.log(match);
+    let report: Flake8Report = {
+        errors: [],
+        statistics: [],
+    }
+
+    let idx = 0;
+    let raw_errors = raw_output.split('\n');
+    let current_error_match = raw_errors[idx].match(error_reg);
+
+    while (current_error_match) {
+        report.errors.push({
+            path: current_error_match[1].replace('./', ''),
+            start_line: parseInt(current_error_match[2]),
+            end_line: parseInt(current_error_match[2]),
+            start_column: parseInt(current_error_match[3]),
+            end_column: parseInt(current_error_match[3]),
+            annotation_level: "failure",
+            message: `[${current_error_match[4]}] ${current_error_match[5]}`,
+        });
+
+        current_error_match = raw_errors[idx].match(error_reg);
+    }
+
+    for (let i = idx; i < raw_errors.length; i++) {
+        let match = raw_errors[i].match(statistic_reg);
         if (match) {
-            errors.push({
-                path: match[1].replace('./', ''),
-                start_line: parseInt(match[2]),
-                end_line: parseInt(match[2]),
-                start_column: parseInt(match[3]),
-                end_column: parseInt(match[3]),
-                annotation_level: "failure",
-                message: `[${match[4]}] ${match[5]}`,
+            report.statistics.push({
+                count: match[1],
+                code: match[2],
+                description: match[3],
             });
         }
-    });
+    }
 
-    console.log(errors);
-
-    return errors;
+    return report;
 }
 
 async function run() {
@@ -62,11 +87,10 @@ async function run() {
     const octokit = github.getOctokit(token);
 
     let out = await runCheck(checkPath);
-    let errors = await parseCheckOutput(out);
+    console.log(out);
+    let report = await parseCheckOutput(out);
 
-    console.log(errors);
-
-    if (errors.length == 0) {
+    if (report.errors.length == 0) {
         await octokit.rest.checks.create({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
@@ -81,6 +105,15 @@ async function run() {
             }
         });
     } else {
+        let summary = `**Issues found:** ${report.errors.length} 🔴\n`
+        summary += "#### Stats:\n"
+        summary += "  Count  |    Description\n"
+        summary += "--------------------------"
+
+        report.statistics.forEach((s) => {
+            summary += `     ${s.count} | [${s.code}] - ${s.description}\n`
+        });
+
         await octokit.rest.checks.create({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
@@ -90,8 +123,8 @@ async function run() {
             conclusion: "failure",
             output: {
                 title: "Flake8 Report",
-                summary: `**Issues found:** ${errors.length} 🔴`,
-                annotations: errors
+                summary: summary,
+                annotations: report.errors
             }
         });
     }

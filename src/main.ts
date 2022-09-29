@@ -1,23 +1,19 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { Octokit } from "octokit";
 
 async function run() {
     try {
-        core.notice('Started Flake8 Github Action.');
-
         const token = core.getInput('gh_token');
-        
-        console.log(token);
-        console.log(github.context.sha);
-
         const octokit = github.getOctokit(token);
+        
+        const sha = core.getInput('commit_sha');
+        console.log(sha);
 
         const check = await octokit.rest.checks.create({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             name: "Flake8 Check Result",
-            head_sha: github.context.sha,
+            head_sha: sha,
             status: "completed",
             conclusion: "success",
             output: {

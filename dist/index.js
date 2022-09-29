@@ -44,16 +44,15 @@ const github = __importStar(__nccwpck_require__(5438));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            core.notice('Started Flake8 Github Action.');
             const token = core.getInput('gh_token');
-            console.log(token);
-            console.log(github.context.sha);
             const octokit = github.getOctokit(token);
+            const sha = core.getInput('commit_sha');
+            console.log(sha);
             const check = yield octokit.rest.checks.create({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
                 name: "Flake8 Check Result",
-                head_sha: github.context.sha,
+                head_sha: sha,
                 status: "completed",
                 conclusion: "success",
                 output: {

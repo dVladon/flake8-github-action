@@ -11,4 +11,7 @@ inputs:
     descriptions: Path to Python code indside the repository
     required: false
     default: .
+  commit_sha:
+    description: Original commit SHA
+    required: true
   

@@ -98,8 +98,8 @@ function run() {
                 status: "completed",
                 conclusion: "success",
                 output: {
-                    title: "Flake8 Check Results",
-                    summary: "No issues found!",
+                    title: "Flake8 Report",
+                    summary: "**Issues found:** 0 🟢",
                     annotations: []
                 }
             });
@@ -113,8 +113,8 @@ function run() {
                 status: "completed",
                 conclusion: "failure",
                 output: {
-                    title: "Flake8 Check Results",
-                    summary: `Found ${errors.length} issues.`,
+                    title: "Flake8 Report",
+                    summary: `**Issues found:** ${errors.length} 🔴`,
                     annotations: errors
                 }
             });

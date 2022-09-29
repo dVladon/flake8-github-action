@@ -6,7 +6,7 @@ async function run() {
     try {
         core.notice('Started Flake8 Github Action.');
 
-        const token = core.getInput('gh-token');
+        const token = core.getInput('gh_token');
         
         console.log(token);
         console.log(github.context.sha);

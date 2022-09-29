@@ -33,7 +33,7 @@ async function runCheck(pathToCheck: string) {
         },
     };
 
-    await exec.exec(`flake8 --exit-zero --max-line-length=120 ${pathToCheck}`, [], opts);
+    await exec.exec(`flake8 --exit-zero --max-line-length=120 --color=never --statistics ${pathToCheck}`, [], opts);
 
     return out;
 }
@@ -62,6 +62,7 @@ async function parseCheckOutput(raw_output: string): Promise<Flake8Report> {
             message: `[${current_error_match[4]}] ${current_error_match[5]}`,
         });
 
+        idx ++;
         current_error_match = raw_errors[idx].match(error_reg);
     }
 
@@ -107,11 +108,9 @@ async function run() {
     } else {
         let summary = `**Issues found:** ${report.errors.length} 🔴\n`
         summary += "#### Stats:\n"
-        summary += "  Count  |    Description\n"
-        summary += "--------------------------"
 
         report.statistics.forEach((s) => {
-            summary += `     ${s.count} | [${s.code}] - ${s.description}\n`
+            summary += `  - [${s.code}] ${s.description}: **${s.count}**\n`
         });
 
         await octokit.rest.checks.create({

@@ -1,0 +1,14 @@
+name: Flake8 Action With Check Annotations
+description: An action that runs flake8 and prints exceptions as check run annotations.
+runs: 
+  using: node18
+  main: src/index.js
+inputs:
+  gh_token:
+    descriptions: Github account token
+    required: true
+  check_path:
+    descriptions: Path to Python code indside the repository
+    required: false
+    default: .
+  

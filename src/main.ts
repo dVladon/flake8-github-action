@@ -7,9 +7,11 @@ async function run() {
         core.notice('Started Flake8 Github Action.');
 
         const token = core.getInput('gh-token');
-        const octokit = github.getOctokit(token);
+        
         console.log(token);
         console.log(github.context.sha);
+
+        const octokit = github.getOctokit(token);
 
         const check = await octokit.rest.checks.create({
             owner: github.context.repo.owner,

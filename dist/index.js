@@ -112,17 +112,18 @@ function run() {
                 conclusion: "success",
                 output: {
                     title: "Flake8 Report",
-                    summary: "**Issues found:** 0 🟢",
+                    summary: "**Status:** 🟢\n**Issues found:** 0 🟢",
                     annotations: []
                 }
             });
         }
         else {
-            let summary = `**Issues found:** ${report.errors.length} 🔴\n`;
-            summary += "#### Stats:\n";
+            let summary = `**Status:** 🔴\n **Issues found:** ${report.errors.length}\n`;
+            summary += "### Stats:\n";
             report.statistics.forEach((s) => {
-                summary += `  - [${s.code}] ${s.description}: **${s.count}**\n`;
+                summary += `  - **${s.code}** ${s.description} - **${s.count}**\n`;
             });
+            summary += "\n\n---\nMore details on how to fix issues: http://pylint-messages.wikidot.com/all-codes";
             yield octokit.rest.checks.create({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,

@@ -10,7 +10,7 @@ async function run() {
         const octokit = new Octokit({ auth: String(token) });
 
         const check = await octokit.rest.checks.listForRef({
-            check_name: github.context.job,
+            check_name: "flake8",
             ...github.context.repo,
             ref: github.context.sha
           });

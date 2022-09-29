@@ -1,7 +1,7 @@
 name: Flake8 Action With Check Annotations
 description: An action that runs flake8 and prints exceptions as check run annotations.
 runs: 
-  using: node12
+  using: node16
   main: lib/main.js
 inputs:
   gh_token:

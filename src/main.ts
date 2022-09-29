@@ -12,7 +12,7 @@ async function run() {
         const check = await octokit.rest.checks.listForRef({
             check_name: "flake8",
             ...github.context.repo,
-            ref: github.context.sha
+            ref: github.context.ref
           });
 
         console.log(check)
